@@ -19,7 +19,11 @@ namespace CommandParser_Alpha
                 if (!string.IsNullOrEmpty(promptMessage))
                     Console.Write(promptMessage);
 
-                string command = Console.ReadLine().ToLowerInvariant();
+                // This should help prevent the prompt firing multiple times
+                // if the user presses Enter during the invoked function.
+                string command = "";
+                while (string.IsNullOrWhiteSpace(command))
+                    command = Console.ReadLine().ToLowerInvariant();
 
                 if (!string.IsNullOrEmpty(exitCommand))
                     if (command == exitCommand)
