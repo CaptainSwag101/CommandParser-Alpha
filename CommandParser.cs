@@ -5,15 +5,16 @@ namespace CommandParser_Alpha
 {
     public class CommandParser
     {
-        private readonly Dictionary<string, Action> commands;
+        private readonly Dictionary<string, Func<Queue<string>?, object?>> commands;
 
-        public CommandParser(Dictionary<string, Action> _commands)
+        public CommandParser(Dictionary<string, Func<Queue<string>?, object?>> _commands)
         {
             commands = _commands;
         }
 
-        public void Prompt(string promptMessage = "", string exitCommand = "")
+        public void Prompt(string promptMessage = "", string exitCommand = "", Queue<string>? autoExecQueue = null)
         {
+            // Loop until the exit command is given
             while (true)
             {
                 if (!string.IsNullOrEmpty(promptMessage))
@@ -23,7 +24,18 @@ namespace CommandParser_Alpha
                 // if the user presses Enter during the invoked function.
                 string command = "";
                 while (string.IsNullOrWhiteSpace(command))
-                    command = Console.ReadLine().ToLowerInvariant();
+                {
+                    // If there is a command on the auto-exec queue, dequeue it and run that command.
+                    // Otherwise, wait for the user's input.
+                    if (autoExecQueue?.Count > 0)
+                    {
+                        command = autoExecQueue.Dequeue();
+                    }
+                    else
+                    {
+                        command = Console.ReadLine().ToLowerInvariant();
+                    }
+                }
 
                 if (!string.IsNullOrEmpty(exitCommand))
                     if (command == exitCommand)
@@ -31,7 +43,8 @@ namespace CommandParser_Alpha
 
                 if (commands.ContainsKey(command))
                 {
-                    commands[command].Invoke();
+                    // Pass the auto-exec queue into the invoked function
+                    commands[command].Invoke(autoExecQueue);
                 }
                 else
                 {
