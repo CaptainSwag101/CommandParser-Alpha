@@ -29,11 +29,11 @@ namespace CommandParser_Alpha
                     // Otherwise, wait for the user's input.
                     if (autoExecQueue?.Count > 0)
                     {
-                        command = autoExecQueue.Dequeue();
+                        command += autoExecQueue.Dequeue();
                     }
                     else
                     {
-                        command = Console.ReadLine().ToLowerInvariant();
+                        command += Console.ReadLine()?.ToLowerInvariant();
                     }
                 }
 
